@@ -8,27 +8,30 @@ Guide d'installation d'OpenCode et de ses dépendances pour l'utiliser avec des 
 
 ## 1. Prérequis
 
-| Outil | Version min | Vérification |
-|---|---|---|
-| `curl` | n'importe | `curl --version` |
-| `bun` ou `npm` | bun ≥ 1.3 / npm ≥ 9 | `bun --version` ou `npm --version` |
-| Ollama | ≥ 0.18 | `ollama --version` |
-| GPU NVIDIA | optionnel mais recommandé | `nvidia-smi` |
+| Outil          | Version min               | Vérification                       |
+| -------------- | ------------------------- | ---------------------------------- |
+| `curl`         | n'importe                 | `curl --version`                   |
+| `bun` ou `npm` | bun ≥ 1.3 / npm ≥ 9       | `bun --version` ou `npm --version` |
+| Ollama         | ≥ 0.18                    | `ollama --version`                 |
+| GPU NVIDIA     | optionnel mais recommandé | `nvidia-smi`                       |
 
 ### Installer les prérequis manquants
 
 **Bun** (recommandé, plus rapide que npm pour les plugins OpenCode) :
+
 ```bash
 curl -fsSL https://bun.sh/install | bash
 ```
 
 **Ollama** :
+
 ```bash
 curl -fsSL https://ollama.com/install.sh | sh
 sudo systemctl enable --now ollama
 ```
 
 Vérifier que l'API Ollama répond :
+
 ```bash
 curl http://localhost:11434/v1/models
 ```
@@ -79,12 +82,14 @@ opencode --version  # ou opencode-cli --version
 Sur certaines distributions, le paquet système installe `opencode-cli` au lieu de `opencode`. Pour avoir la commande `opencode` standard :
 
 ### Option 1 — Symlink user (sans sudo)
+
 ```bash
 mkdir -p ~/.local/bin
 ln -s /usr/bin/opencode-cli ~/.local/bin/opencode
 ```
 
 Vérifier que `~/.local/bin` est dans le PATH (sinon ajouter à `~/.bashrc`) :
+
 ```bash
 echo $PATH | tr ':' '\n' | grep -q "$HOME/.local/bin" || \
   echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
@@ -92,11 +97,13 @@ source ~/.bashrc
 ```
 
 ### Option 2 — Symlink global (avec sudo)
+
 ```bash
 sudo ln -s /usr/bin/opencode-cli /usr/local/bin/opencode
 ```
 
 ### Option 3 — Alias shell
+
 ```bash
 echo 'alias opencode="opencode-cli"' >> ~/.bashrc
 source ~/.bashrc
@@ -109,6 +116,7 @@ source ~/.bashrc
 Si tu as plusieurs versions installées (système + npm sous différents Node), supprime celles que tu n'utilises pas :
 
 ### npm sous une version spécifique de nvm
+
 ```bash
 # Lister les installations npm globales pour une version Node donnée
 PATH=~/.nvm/versions/node/v22.20.0/bin:$PATH npm ls -g --depth=0
@@ -118,6 +126,7 @@ PATH=~/.nvm/versions/node/v22.20.0/bin:$PATH npm uninstall -g opencode-ai
 ```
 
 ### Binaire système
+
 ```bash
 sudo rm /usr/bin/opencode-cli
 # ou via le gestionnaire de paquets si installé via .deb/.rpm
@@ -174,10 +183,10 @@ sudo apt update && sudo apt upgrade opencode-cli
 
 ## Dépannage installation
 
-| Problème | Solution |
-|---|---|
-| `command not found: opencode` | Vérifier le PATH, utiliser le symlink (étape 4) |
+| Problème                               | Solution                                                           |
+| -------------------------------------- | ------------------------------------------------------------------ |
+| `command not found: opencode`          | Vérifier le PATH, utiliser le symlink (étape 4)                    |
 | `opencode: cannot execute binary file` | Mauvaise architecture — réinstaller pour la bonne (x86-64 / arm64) |
-| Conflit npm avec nvm | Désinstaller toutes les versions, réinstaller via script officiel |
-| `Permission denied` au lancement | `chmod +x` sur le binaire ou réinstaller proprement |
-| Erreur `GLIBC` trop ancienne | Distribution trop ancienne — utiliser la version Node/npm |
+| Conflit npm avec nvm                   | Désinstaller toutes les versions, réinstaller via script officiel  |
+| `Permission denied` au lancement       | `chmod +x` sur le binaire ou réinstaller proprement                |
+| Erreur `GLIBC` trop ancienne           | Distribution trop ancienne — utiliser la version Node/npm          |

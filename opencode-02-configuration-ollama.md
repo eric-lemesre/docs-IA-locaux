@@ -10,11 +10,11 @@ Configuration d'OpenCode pour utiliser **Ollama** comme provider local, avec **d
 
 OpenCode sépare **config** et **credentials** dans deux fichiers distincts. Les deux sont obligatoires, sinon le provider apparaît mais échoue avec une erreur d'auth.
 
-| Fichier | Rôle |
-|---|---|
-| `~/.config/opencode/opencode.json` | Providers, modèles, plugins, comportement |
-| `~/.local/share/opencode/auth.json` | Clés/tokens d'authentification |
-| `~/.config/opencode/package.json` | Plugins npm/bun installés |
+| Fichier                             | Rôle                                      |
+| ----------------------------------- | ----------------------------------------- |
+| `~/.config/opencode/opencode.json`  | Providers, modèles, plugins, comportement |
+| `~/.local/share/opencode/auth.json` | Clés/tokens d'authentification            |
+| `~/.config/opencode/package.json`   | Plugins npm/bun installés                 |
 
 ---
 
@@ -29,11 +29,13 @@ bun add opencode-models-discovery
 ```
 
 Vérification :
+
 ```bash
 cat ~/.config/opencode/package.json
 ```
 
 Doit contenir :
+
 ```json
 {
   "dependencies": {
@@ -66,14 +68,14 @@ Crée `~/.config/opencode/opencode.json` :
 
 ### Détail des champs
 
-| Champ | Rôle |
-|---|---|
-| `$schema` | Active l'autocomplétion JSON dans les éditeurs |
-| `plugin` | Liste des plugins à charger au démarrage |
-| `provider.ollama` | Identifiant du provider (libre, sera utilisé partout) |
-| `npm` | Adapter AI SDK : `@ai-sdk/openai-compatible` car Ollama expose une API compatible OpenAI |
-| `name` | Libellé affiché dans l'UI |
-| `options.baseURL` | Endpoint Ollama (`/v1` est obligatoire pour la compat OpenAI) |
+| Champ             | Rôle                                                                                     |
+| ----------------- | ---------------------------------------------------------------------------------------- |
+| `$schema`         | Active l'autocomplétion JSON dans les éditeurs                                           |
+| `plugin`          | Liste des plugins à charger au démarrage                                                 |
+| `provider.ollama` | Identifiant du provider (libre, sera utilisé partout)                                    |
+| `npm`             | Adapter AI SDK : `@ai-sdk/openai-compatible` car Ollama expose une API compatible OpenAI |
+| `name`            | Libellé affiché dans l'UI                                                                |
+| `options.baseURL` | Endpoint Ollama (`/v1` est obligatoire pour la compat OpenAI)                            |
 
 > 💡 Sur **Windows**, remplacer `localhost`/`127.0.0.1` par `127.0.0.1` n'est pas suffisant : utiliser explicitement `http://127.0.0.1:11434/v1`.
 
@@ -95,6 +97,7 @@ Crée `~/.local/share/opencode/auth.json` :
 ⚠️ **La clé top-level (`ollama`) DOIT correspondre exactement au nom du provider dans `opencode.json`.** Sinon : provider visible mais erreur 401 au premier appel.
 
 Sécuriser le fichier (recommandé même sans vraies clés) :
+
 ```bash
 chmod 600 ~/.local/share/opencode/auth.json
 ```
@@ -132,12 +135,12 @@ Pour filtrer les providers scannés ou ajuster le cache :
 }
 ```
 
-| Option | Rôle | Défaut |
-|---|---|---|
+| Option              | Rôle                              | Défaut      |
+| ------------------- | --------------------------------- | ----------- |
 | `providers.include` | Whitelist des providers à scanner | `[]` (tous) |
-| `providers.exclude` | Blacklist (si `include` vide) | `[]` |
-| `discovery.enabled` | Active la découverte | `true` |
-| `discovery.ttl` | Cache en ms | `15000` |
+| `providers.exclude` | Blacklist (si `include` vide)     | `[]`        |
+| `discovery.enabled` | Active la découverte              | `true`      |
+| `discovery.ttl`     | Cache en ms                       | `15000`     |
 
 ---
 
@@ -158,27 +161,30 @@ Le nouveau modèle `qwen2.5-coder:7b-32k` apparaîtra automatiquement dans OpenC
 
 ### Recommandations par modèle (16 GB VRAM)
 
-| Modèle source | Variante recommandée | `num_ctx` |
-|---|---|---|
-| `qwen2.5-coder:7b` | `qwen2.5-coder:7b-32k` | 32 768 |
-| `devstral-small-2:latest` | `devstral-small-2:24k` | 24 576 |
-| `gpt-oss:latest` | `gpt-oss:60k` | 65 536 |
-| `qwen3-coder:30b-a3b` | `qwen3-coder:30b-a3b-32k` | 32 768 |
+| Modèle source             | Variante recommandée      | `num_ctx` |
+| ------------------------- | ------------------------- | --------- |
+| `qwen2.5-coder:7b`        | `qwen2.5-coder:7b-32k`    | 32 768    |
+| `devstral-small-2:latest` | `devstral-small-2:24k`    | 24 576    |
+| `gpt-oss:latest`          | `gpt-oss:60k`             | 65 536    |
+| `qwen3-coder:30b-a3b`     | `qwen3-coder:30b-a3b-32k` | 32 768    |
 
 ---
 
 ## 7. Lancement et sélection du modèle
 
 ### Mode interactif
+
 ```bash
 opencode
 ```
 
 Dans l'UI :
+
 - Tape `/models` → la liste affiche **tous tes modèles Ollama** automatiquement
 - Sélectionne celui à utiliser
 
 ### CLI direct (one-shot)
+
 ```bash
 opencode --model ollama/qwen2.5-coder:7b-32k "génère un endpoint REST en Rust avec axum"
 ```
@@ -186,6 +192,7 @@ opencode --model ollama/qwen2.5-coder:7b-32k "génère un endpoint REST en Rust 
 Format obligatoire : `<provider_id>/<model_id>`.
 
 ### Variable d'environnement (modèle par défaut)
+
 ```bash
 export OPENCODE_MODEL="ollama/devstral-small-2:24k"
 opencode
@@ -196,6 +203,7 @@ opencode
 ## 8. Vérification
 
 ### Tester l'endpoint Ollama
+
 ```bash
 curl -s http://127.0.0.1:11434/v1/models | jq '.data[].id'
 ```
@@ -203,6 +211,7 @@ curl -s http://127.0.0.1:11434/v1/models | jq '.data[].id'
 Tous les modèles listés ici seront découverts par OpenCode.
 
 ### Tester OpenCode
+
 ```bash
 opencode --model ollama/qwen2.5-coder:7b "écris une fonction fibonacci en Python"
 ```
@@ -220,6 +229,7 @@ ollama launch opencode
 ```
 
 Ollama injecte sa configuration via la variable `OPENCODE_CONFIG_CONTENT` au démarrage. Pratique pour tester, mais :
+
 - Les modèles définis dans `opencode.json` n'apparaissent pas dans le menu de sélection initial
 - À chaque relance, il faut repasser par cette commande
 
@@ -254,6 +264,7 @@ Tu peux combiner Ollama avec d'autres providers locaux ou cloud :
 ```
 
 Pour les providers cloud, ajouter la vraie clé dans `auth.json` :
+
 ```json
 {
   "ollama":    { "type": "api", "key": "ollama" },
@@ -266,16 +277,16 @@ Pour les providers cloud, ajouter la vraie clé dans `auth.json` :
 
 ## 11. Dépannage configuration
 
-| Symptôme | Cause | Solution |
-|---|---|---|
-| Provider absent de `/models` | OpenCode pas redémarré | Relancer après modif `opencode.json` |
-| Erreur 401 / auth | Noms divergents entre les 2 fichiers | Vérifier que la clé top-level dans `auth.json` == nom dans `provider:` |
-| `Cannot find module '@ai-sdk/openai-compatible'` | Plugin pas installé | `cd ~/.config/opencode && bun add @ai-sdk/openai-compatible` |
-| Tool calls qui échouent / boucle infinie | `num_ctx` trop petit (4096) | Créer variante avec `num_ctx ≥ 16384` (section 6) |
-| Modèles découverts mais réponses vides | `/v1/models` répond mais Ollama plante | `journalctl -u ollama -f` pour les logs |
-| `Connection refused` | Ollama pas lancé | `sudo systemctl start ollama` |
-| Sur Windows : `Unable to connect` | `localhost` mal résolu | Utiliser `http://127.0.0.1:11434/v1` |
-| Modèle introuvable malgré `ollama list` | Cache plugin | `discovery.ttl: 0` ou redémarrer OpenCode |
+| Symptôme                                         | Cause                                  | Solution                                                               |
+| ------------------------------------------------ | -------------------------------------- | ---------------------------------------------------------------------- |
+| Provider absent de `/models`                     | OpenCode pas redémarré                 | Relancer après modif `opencode.json`                                   |
+| Erreur 401 / auth                                | Noms divergents entre les 2 fichiers   | Vérifier que la clé top-level dans `auth.json` == nom dans `provider:` |
+| `Cannot find module '@ai-sdk/openai-compatible'` | Plugin pas installé                    | `cd ~/.config/opencode && bun add @ai-sdk/openai-compatible`           |
+| Tool calls qui échouent / boucle infinie         | `num_ctx` trop petit (4096)            | Créer variante avec `num_ctx ≥ 16384` (section 6)                      |
+| Modèles découverts mais réponses vides           | `/v1/models` répond mais Ollama plante | `journalctl -u ollama -f` pour les logs                                |
+| `Connection refused`                             | Ollama pas lancé                       | `sudo systemctl start ollama`                                          |
+| Sur Windows : `Unable to connect`                | `localhost` mal résolu                 | Utiliser `http://127.0.0.1:11434/v1`                                   |
+| Modèle introuvable malgré `ollama list`          | Cache plugin                           | `discovery.ttl: 0` ou redémarrer OpenCode                              |
 
 ---
 

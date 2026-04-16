@@ -7,17 +7,18 @@
 
 ## 🤔 Fine-tuning vs RAG — que choisir ?
 
-| Critère | Fine-tuning | RAG |
-|---|---|---|
-| **Injecter de nouvelles connaissances** | ⚠️ Fragile | ✅ Idéal |
-| **Changer le style / ton / format** | ✅ Idéal | ❌ Difficile |
-| **Enseigner une tâche spécifique** | ✅ | ⚠️ Partiel |
-| **Suivre une structure stricte** (JSON custom) | ✅ | ⚠️ Prompt engineering |
-| **Données fraîches / changeantes** | ❌ | ✅ |
-| **Coût initial** | 💰💰 (compute) | 💰 (setup) |
-| **Coût inférence** | = base | ⬆️ (retrieval) |
+| Critère                                        | Fine-tuning    | RAG                   |
+| ---------------------------------------------- | -------------- | --------------------- |
+| **Injecter de nouvelles connaissances**        | ⚠️ Fragile     | ✅ Idéal               |
+| **Changer le style / ton / format**            | ✅ Idéal        | ❌ Difficile           |
+| **Enseigner une tâche spécifique**             | ✅              | ⚠️ Partiel            |
+| **Suivre une structure stricte** (JSON custom) | ✅              | ⚠️ Prompt engineering |
+| **Données fraîches / changeantes**             | ❌              | ✅                     |
+| **Coût initial**                               | 💰💰 (compute) | 💰 (setup)            |
+| **Coût inférence**                             | = base         | ⬆️ (retrieval)        |
 
 **Règle 2026** :
+
 - **RAG** pour injecter du savoir factuel
 - **Fine-tuning** pour changer le comportement (style, format, domaine)
 - Les deux se **combinent** très bien (fine-tune sur ton style + RAG pour les faits)
@@ -27,6 +28,7 @@
 ## 🏆 Framework recommandé — Unsloth
 
 **Unsloth** est devenu le standard 2026 pour le fine-tuning local. Gains mesurés :
+
 - **~2× plus rapide** qu'un pipeline LoRA HuggingFace classique
 - **70 % de VRAM en moins** que le full fine-tuning
 - **50-80 % de VRAM en moins** que LoRA standard
@@ -34,13 +36,13 @@
 
 ### Comparaison des frameworks
 
-| Framework | Vitesse | VRAM | Multi-GPU | Verdict |
-|---|---|---|---|---|
-| **Unsloth** | 🥇 | 🥇 | ❌ | 🥇 Mono-GPU (ton cas) |
-| **Axolotl** | Lent | OK | ✅ FSDP2 | Multi-GPU distribué |
-| **TorchTune** | Correct | Correct | ✅ | PyTorch-pur, plus flexible |
-| **HF TRL + PEFT** | Lent | OK | ✅ | Contrôle maximal |
-| **LLaMA-Factory** | OK | OK | ✅ | UI web, débutants |
+| Framework         | Vitesse | VRAM    | Multi-GPU | Verdict                    |
+| ----------------- | ------- | ------- | --------- | -------------------------- |
+| **Unsloth**       | 🥇      | 🥇      | ❌         | 🥇 Mono-GPU (ton cas)      |
+| **Axolotl**       | Lent    | OK      | ✅ FSDP2   | Multi-GPU distribué        |
+| **TorchTune**     | Correct | Correct | ✅         | PyTorch-pur, plus flexible |
+| **HF TRL + PEFT** | Lent    | OK      | ✅         | Contrôle maximal           |
+| **LLaMA-Factory** | OK      | OK      | ✅         | UI web, débutants          |
 
 **Benchmark** : Llama-3.1 8B, QLoRA, 2 epochs, A100 40 GB → Unsloth **3.2 h** vs Axolotl **5.8 h**.
 
@@ -49,12 +51,14 @@
 ## 🎯 LoRA vs QLoRA — que choisir ?
 
 ### LoRA (Low-Rank Adaptation)
+
 - Base model en **16-bit**
 - Adaptateurs en 16-bit
 - Qualité légèrement supérieure
 - **4× plus de VRAM** que QLoRA
 
 ### QLoRA (Quantized LoRA)
+
 - Base model en **4-bit** (NF4 ou Dynamic)
 - Adaptateurs en bf16/fp16
 - **Qualité quasi-identique** à LoRA en 2026 (grâce aux Dynamic 4-bit quants)
@@ -62,13 +66,13 @@
 
 ### VRAM requise par taille de modèle
 
-| Modèle | LoRA 16-bit | QLoRA 4-bit | Tient sur 16 GB ? |
-|---|---|---|---|
-| 7B-8B | 16-24 GB | **8-12 GB** | ✅ QLoRA |
-| 14B | 32-40 GB | **16-20 GB** | ⚠️ Juste (seq<512) |
-| 24B (Devstral) | 48+ GB | 24 GB | ❌ |
-| 30B MoE (3B active) | - | **17.5 GB** | ⚠️ Juste avec Unsloth |
-| 70B | - | 40+ GB | ❌ |
+| Modèle              | LoRA 16-bit | QLoRA 4-bit  | Tient sur 16 GB ?     |
+| ------------------- | ----------- | ------------ | --------------------- |
+| 7B-8B               | 16-24 GB    | **8-12 GB**  | ✅ QLoRA               |
+| 14B                 | 32-40 GB    | **16-20 GB** | ⚠️ Juste (seq<512)    |
+| 24B (Devstral)      | 48+ GB      | 24 GB        | ❌                     |
+| 30B MoE (3B active) | -           | **17.5 GB**  | ⚠️ Juste avec Unsloth |
+| 70B                 | -           | 40+ GB       | ❌                     |
 
 **Sweet spot 16 GB** : **QLoRA sur 7B-8B**, ou **QLoRA sur MoE 30B** avec Unsloth.
 
@@ -76,15 +80,15 @@
 
 ## 🎓 Modèles de base recommandés (16 GB VRAM)
 
-| Modèle | Pourquoi le fine-tuner ? |
-|---|---|
-| **Qwen 2.5 7B** | Multilingue fort, bon point de départ général |
-| **Llama 3.1 8B** | Plus grand écosystème, doc abondante |
-| **Mistral 7B v0.3** | Excellent en français, Apache 2.0 |
-| **Qwen 2.5 Coder 7B** | Pour du code spécialisé (API privée) |
-| **Gemma 4 E4B** | Petit, rapide, idéal pour prototyper |
-| **Phi-4** | Reasoning fort, petit footprint |
-| **Qwen3 30B-A3B** | MoE : grand modèle, peu de VRAM à fine-tuner |
+| Modèle                | Pourquoi le fine-tuner ?                      |
+| --------------------- | --------------------------------------------- |
+| **Qwen 2.5 7B**       | Multilingue fort, bon point de départ général |
+| **Llama 3.1 8B**      | Plus grand écosystème, doc abondante          |
+| **Mistral 7B v0.3**   | Excellent en français, Apache 2.0             |
+| **Qwen 2.5 Coder 7B** | Pour du code spécialisé (API privée)          |
+| **Gemma 4 E4B**       | Petit, rapide, idéal pour prototyper          |
+| **Phi-4**             | Reasoning fort, petit footprint               |
+| **Qwen3 30B-A3B**     | MoE : grand modèle, peu de VRAM à fine-tuner  |
 
 ---
 
@@ -101,20 +105,21 @@
 ```
 
 Ou format **Alpaca** (plus simple) :
+
 ```json
 {"instruction": "...", "input": "...", "output": "..."}
 ```
 
 ### Règles de qualité
 
-| Règle | Raison |
-|---|---|
-| **Minimum 300 exemples** | Sous ce seuil, overfitting garanti |
-| **1000-5000 exemples** est le sweet spot | Convergence stable sans overfitting |
-| **Diversité > quantité** | 1000 exemples variés > 10000 similaires |
-| **Qualité > quantité** | Une erreur dans les labels empoisonne l'apprentissage |
-| **Balance les classes** | Si génération par type, pas d'exemples rares |
-| **Valide sur un holdout** | Garder 10 % jamais vu pour l'éval |
+| Règle                                    | Raison                                                |
+| ---------------------------------------- | ----------------------------------------------------- |
+| **Minimum 300 exemples**                 | Sous ce seuil, overfitting garanti                    |
+| **1000-5000 exemples** est le sweet spot | Convergence stable sans overfitting                   |
+| **Diversité > quantité**                 | 1000 exemples variés > 10000 similaires               |
+| **Qualité > quantité**                   | Une erreur dans les labels empoisonne l'apprentissage |
+| **Balance les classes**                  | Si génération par type, pas d'exemples rares          |
+| **Valide sur un holdout**                | Garder 10 % jamais vu pour l'éval                     |
 
 ### Où trouver des datasets
 
@@ -232,11 +237,11 @@ tokenizer.save_pretrained("qwen2.5-7b-lora-adapter")
 
 Surveiller **3 indicateurs clés** :
 
-| Métrique | Sain | Problème |
-|---|---|---|
-| `train_loss` | Décroît régulièrement | Plateau → LR trop bas ; explose → LR trop haut |
-| `eval_loss` | Décroît puis plateau | Monte alors que `train_loss` descend → **overfitting** |
-| VRAM | 80-95 % | 100 % → OOM imminent, réduire batch ou seq |
+| Métrique     | Sain                  | Problème                                               |
+| ------------ | --------------------- | ------------------------------------------------------ |
+| `train_loss` | Décroît régulièrement | Plateau → LR trop bas ; explose → LR trop haut         |
+| `eval_loss`  | Décroît puis plateau  | Monte alors que `train_loss` descend → **overfitting** |
+| VRAM         | 80-95 %               | 100 % → OOM imminent, réduire batch ou seq             |
 
 ### 4. Fusion et export GGUF (pour Ollama)
 
@@ -286,51 +291,56 @@ ollama run qwen2.5-7b-custom "Bonjour"
 ## ⚙️ Hyperparamètres — guide pratique
 
 ### Learning rate
-| Cas | LR recommandé |
-|---|---|
-| QLoRA standard | **2e-4** (point de départ) |
-| Modèle très grand (30B+) | 1e-4 |
-| Dataset très petit (< 500) | 5e-5 |
-| Continued pretraining | 5e-5 à 1e-4 |
-| LR trop haut (symptôme) | Loss explose à NaN |
-| LR trop bas (symptôme) | Loss plafonne vite |
+
+| Cas                        | LR recommandé              |
+| -------------------------- | -------------------------- |
+| QLoRA standard             | **2e-4** (point de départ) |
+| Modèle très grand (30B+)   | 1e-4                       |
+| Dataset très petit (< 500) | 5e-5                       |
+| Continued pretraining      | 5e-5 à 1e-4                |
+| LR trop haut (symptôme)    | Loss explose à NaN         |
+| LR trop bas (symptôme)     | Loss plafonne vite         |
 
 ### Rank (r)
-| r | Usage |
-|---|---|
-| **8** | Adaptations mineures (style, format) |
-| **16** | ✅ Par défaut recommandé |
-| **32** | Tâches complexes, domaines techniques |
-| **64** | Changement majeur de comportement (rare) |
+
+| r        | Usage                                    |
+| -------- | ---------------------------------------- |
+| **8**    | Adaptations mineures (style, format)     |
+| **16**   | ✅ Par défaut recommandé                  |
+| **32**   | Tâches complexes, domaines techniques    |
+| **64**   | Changement majeur de comportement (rare) |
 | **128+** | Quasi = full fine-tuning, perd l'intérêt |
 
 **Règle** : `lora_alpha = 2 × r` généralement.
 
 ### Epochs
-| Dataset | Epochs |
-|---|---|
-| < 1000 exemples | 1-3 |
-| 1000-10 000 | 2-5 |
-| > 10 000 | 1-2 |
+
+| Dataset         | Epochs |
+| --------------- | ------ |
+| < 1000 exemples | 1-3    |
+| 1000-10 000     | 2-5    |
+| > 10 000        | 1-2    |
 
 ⚠️ Au-delà de 5 epochs sur un petit dataset → **overfitting quasi-certain**.
 
 ### Batch size effectif
+
 ```
 batch_effectif = per_device_train_batch_size × gradient_accumulation_steps
 ```
 
-| VRAM | Config recommandée |
-|---|---|
-| 16 GB (7B) | `per_device=2, grad_accum=4` → effectif 8 |
+| VRAM               | Config recommandée                        |
+| ------------------ | ----------------------------------------- |
+| 16 GB (7B)         | `per_device=2, grad_accum=4` → effectif 8 |
 | 16 GB (7B, seq=8k) | `per_device=1, grad_accum=8` → effectif 8 |
-| 16 GB (MoE 30B) | `per_device=1, grad_accum=8` → effectif 8 |
+| 16 GB (MoE 30B)    | `per_device=1, grad_accum=8` → effectif 8 |
 
 ---
 
 ## 🧪 Évaluation post fine-tuning
 
 ### 1. Évaluation automatique sur holdout
+
 ```python
 # 10 % du dataset non vu à l'entraînement
 eval_dataset = load_dataset("json", data_files="eval.jsonl", split="train")
@@ -341,6 +351,7 @@ metrics = trainer.evaluate()  # perplexité, eval_loss
 ```
 
 ### 2. Évaluation LLM-as-judge
+
 Utiliser un modèle plus gros pour juger la qualité des réponses :
 
 ```python
@@ -356,6 +367,7 @@ scores = ollama.generate(model="qwen3:30b-a3b-instruct-2507", prompt=judge_promp
 ```
 
 ### 3. Benchmarks spécifiques au domaine
+
 - **Code** : HumanEval, MBPP
 - **Q&A** : SQuAD, TriviaQA
 - **Traduction** : BLEU, COMET
@@ -367,16 +379,20 @@ scores = ollama.generate(model="qwen3:30b-a3b-instruct-2507", prompt=judge_promp
 ## ❌ Erreurs fréquentes
 
 ### 1. Overfitting
+
 **Symptôme** : `train_loss → 0`, `eval_loss ↗`.
 **Fix** : réduire epochs, augmenter dropout (0.1), agrandir le dataset, early stopping.
 
 ### 2. Catastrophic forgetting
+
 **Symptôme** : le modèle oublie ses compétences générales après fine-tuning (ex : ne sait plus coder).
 **Fix** : mélanger le dataset spécifique avec 10-20 % de données généralistes (OpenHermes, etc.). Ou entraîner un LoRA séparé.
 
 ### 3. OOM (Out of Memory)
+
 **Symptôme** : `CUDA out of memory`.
 **Fix** : dans l'ordre
+
 1. Réduire `per_device_train_batch_size` à 1
 2. Augmenter `gradient_accumulation_steps`
 3. Réduire `max_seq_length`
@@ -384,15 +400,19 @@ scores = ollama.generate(model="qwen3:30b-a3b-instruct-2507", prompt=judge_promp
 5. Passer de LoRA → QLoRA (4-bit)
 
 ### 4. Format de prompt incohérent
+
 Le template d'inférence doit **exactement** correspondre au template d'entraînement. Sinon, le modèle produit du charabia.
 
 ### 5. Dataset pollué
+
 Un seul exemple mal labellisé peut créer un biais. Toujours **inspecter manuellement** 20-50 exemples aléatoires avant de lancer l'entraînement.
 
 ### 6. Mauvais template Ollama
+
 Après export GGUF, si tu utilises un `TEMPLATE` Ollama qui ne correspond pas au format d'entraînement, le modèle donne des réponses cassées. **Copier le template du modèle de base**.
 
 ### 7. Tester uniquement sur des cas connus
+
 Toujours tester sur des **cas out-of-distribution** pour détecter la régression.
 
 ---
@@ -400,12 +420,14 @@ Toujours tester sur des **cas out-of-distribution** pour détecter la régressio
 ## 💡 Cas d'usage fréquents
 
 ### 1. Assistant domaine spécifique (juridique, médical, technique)
+
 - **Base** : Qwen 2.5 7B Instruct
 - **Dataset** : 2000-5000 Q/R du domaine (du RAG peut aussi générer des paires)
 - **Rank** : 16
 - **Epochs** : 2-3
 
 ### 2. Générateur de code dans un framework interne
+
 - **Base** : Qwen 2.5 Coder 7B
 - **Dataset** : PRs internes, docstrings, exemples canoniques (500-3000)
 - **Rank** : 32
@@ -413,6 +435,7 @@ Toujours tester sur des **cas out-of-distribution** pour détecter la régressio
 - ⚠️ Éviter de passer les secrets en clair dans le dataset
 
 ### 3. Style éditorial / voix de marque
+
 - **Base** : Mistral 7B v0.3
 - **Dataset** : 500-2000 textes écrits dans le style cible
 - **Rank** : 8-16
@@ -420,12 +443,14 @@ Toujours tester sur des **cas out-of-distribution** pour détecter la régressio
 - **Note** : le style s'apprend vite, ne pas surentraîner
 
 ### 4. Traduction FR↔EN avec glossaire métier
+
 - **Base** : Mistral Small 3.1 (si tu as 24 GB) ou Qwen 2.5 7B
 - **Dataset** : paires FR↔EN du domaine (3000-10 000)
 - **Rank** : 16-32
 - **Epochs** : 2
 
 ### 5. Format de sortie strict (JSON custom)
+
 - **Base** : Qwen 2.5 7B
 - **Dataset** : 500-2000 paires input → JSON exact (toujours structure identique)
 - **Rank** : 8 (changement mineur)
@@ -453,7 +478,9 @@ dataset = load_dataset("text", data_files="corpus.txt")
 ## 🧰 Alternatives à Unsloth
 
 ### Axolotl — multi-GPU / production
+
 Config YAML déclarative, excellent si tu scales à plusieurs GPUs :
+
 ```yaml
 base_model: Qwen/Qwen2.5-7B-Instruct
 load_in_4bit: true
@@ -470,12 +497,15 @@ learning_rate: 2e-4
 ```
 
 ### LLaMA-Factory — UI web
+
 Pour qui veut fine-tuner sans écrire de code :
+
 ```bash
 llamafactory-cli webui
 ```
 
 ### HuggingFace TRL + PEFT
+
 Maximum de flexibilité et contrôle, mais plus verbeux.
 
 ---
@@ -484,23 +514,23 @@ Maximum de flexibilité et contrôle, mais plus verbeux.
 
 ### Coût compute (sur 16 GB VRAM local)
 
-| Dataset | Modèle | Durée (RTX 4090 equiv.) |
-|---|---|---|
-| 1000 exemples | Qwen 2.5 7B QLoRA | ~30 min |
-| 5000 exemples | Qwen 2.5 7B QLoRA | ~2 h |
-| 10 000 exemples | Qwen 2.5 7B QLoRA | ~4 h |
-| 5000 exemples | Qwen3 30B-A3B QLoRA | ~6 h |
+| Dataset         | Modèle              | Durée (RTX 4090 equiv.) |
+| --------------- | ------------------- | ----------------------- |
+| 1000 exemples   | Qwen 2.5 7B QLoRA   | ~30 min                 |
+| 5000 exemples   | Qwen 2.5 7B QLoRA   | ~2 h                    |
+| 10 000 exemples | Qwen 2.5 7B QLoRA   | ~4 h                    |
+| 5000 exemples   | Qwen3 30B-A3B QLoRA | ~6 h                    |
 
 ### Quand fine-tuner vs rester en prompt engineering
 
-| Besoin | Solution |
-|---|---|
-| Changer 1-2 fois la réponse | Few-shot dans le prompt |
-| Format stable sur 1 tâche | System prompt + examples |
-| Style cohérent sur 100 tâches | **Fine-tuning** |
-| Injecter 10 docs | RAG |
-| Injecter 10 000 docs | RAG |
-| Vraie spécialisation domaine | **Fine-tuning + RAG** |
+| Besoin                        | Solution                 |
+| ----------------------------- | ------------------------ |
+| Changer 1-2 fois la réponse   | Few-shot dans le prompt  |
+| Format stable sur 1 tâche     | System prompt + examples |
+| Style cohérent sur 100 tâches | **Fine-tuning**          |
+| Injecter 10 docs              | RAG                      |
+| Injecter 10 000 docs          | RAG                      |
+| Vraie spécialisation domaine  | **Fine-tuning + RAG**    |
 
 ---
 

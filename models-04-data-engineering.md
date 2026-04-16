@@ -7,13 +7,13 @@
 
 ## 🏆 Top 5 — Data engineering sur 16 GB VRAM
 
-| # | Modèle | Taille | SQL | Pandas/Polars | dbt/Schémas |
-|---|---|---|---|---|---|
-| 1 | **Qwen3-Coder 30B-A3B** | 30B MoE / 3B | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| 2 | **DeepSeek-Coder V2 16B** | 16B MoE | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
-| 3 | **Qwen2.5-Coder 14B** | 14B | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
-| 4 | **GLM-4.7 Thinking** | 9B/32B | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| 5 | **Codestral 25.12** | 22B | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
+| #   | Modèle                    | Taille       | SQL   | Pandas/Polars | dbt/Schémas |
+| --- | ------------------------- | ------------ | ----- | ------------- | ----------- |
+| 1   | **Qwen3-Coder 30B-A3B**   | 30B MoE / 3B | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐         | ⭐⭐⭐⭐⭐       |
+| 2   | **DeepSeek-Coder V2 16B** | 16B MoE      | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐         | ⭐⭐⭐⭐        |
+| 3   | **Qwen2.5-Coder 14B**     | 14B          | ⭐⭐⭐⭐  | ⭐⭐⭐⭐          | ⭐⭐⭐⭐        |
+| 4   | **GLM-4.7 Thinking**      | 9B/32B       | ⭐⭐⭐⭐  | ⭐⭐⭐⭐          | ⭐⭐⭐⭐⭐       |
+| 5   | **Codestral 25.12**       | 22B          | ⭐⭐⭐⭐  | ⭐⭐⭐           | ⭐⭐⭐         |
 
 ---
 
@@ -22,12 +22,14 @@
 Déjà champion en code agentique, **Qwen3-Coder est aussi #1 pour la data engineering** : génération SQL complexe, dataframes, pipelines.
 
 ### Forces data
+
 - **Text-to-SQL** : excellent sur joins multi-tables, CTEs, fenêtres
 - Maîtrise PostgreSQL, MySQL, Snowflake, BigQuery, DuckDB
 - Génération **dbt models** avec `ref()`, `source()`, tests, docs
 - Pandas + Polars idiomatique (suit les bonnes pratiques 2026)
 
 ### Installation
+
 ```bash
 ollama pull hf.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF:UD-Q4_K_XL
 
@@ -38,6 +40,7 @@ ollama run hf.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF:UD-Q4_K_XL
 ```
 
 ### Prompt type SQL
+
 ```
 Schéma :
 - orders(id, user_id, total, created_at, status)
@@ -58,12 +61,14 @@ Renvoie uniquement le SQL, sans explication.
 MoE 16B de DeepSeek, **explicitement entraîné sur Python data stack**. Souvent **supérieur à Qwen pour pandas/polars purs**.
 
 ### Forces
+
 - Idiomes pandas/polars propres (vectorisation, méthodes chainées)
 - Excellent sur Spark/PySpark
 - Connaît bien Airflow, Dagster, Prefect
 - Génère du code **bug-free** sur dataframes (benchmark spécifique)
 
 ### Installation
+
 ```bash
 ollama pull deepseek-coder-v2:16b
 
@@ -74,6 +79,7 @@ ollama run deepseek-coder-v2:16b
 ```
 
 ### Quand le préférer à Qwen3-Coder
+
 - Tâches **purement Python data** (pandas, polars, numpy, scikit, pyspark)
 - Génération de notebooks Jupyter
 - Code de transformation Spark complexe
@@ -85,12 +91,14 @@ ollama run deepseek-coder-v2:16b
 Plus petit que le 30B-A3B mais **complètement dense** → comportement plus prévisible, moins de surprises.
 
 ### Forces
+
 - Stable et déterministe
 - Tient en 9 GB Q4, contexte 32k confortable
 - Bon trade-off vitesse/qualité
 - Excellent pour **migration de données** (script ad-hoc)
 
 ### Installation
+
 ```bash
 ollama pull qwen2.5-coder:14b
 ollama run qwen2.5-coder:14b
@@ -107,12 +115,14 @@ ollama run qwen2.5-coder:14b
 Modèle reasoning de Zhipu AI, **excellent pour le raisonnement multi-étapes** (planifier un pipeline ETL complet).
 
 ### Forces
+
 - Capable de **planifier des DAG Airflow/Dagster** complets
 - Excellent pour le **schema design** (3NF, star schema, data vault)
 - Génère des **migrations Alembic / Flyway** cohérentes
 - Comprend les contraintes (FK, indexes, partitioning)
 
 ### Installation
+
 ```bash
 ollama pull glm-4.7
 
@@ -122,6 +132,7 @@ ollama run glm-4.7
 ```
 
 ### Quand l'utiliser
+
 - Conception de schéma de données
 - Planification d'un pipeline complet (ingestion → staging → marts)
 - Migration entre stacks (ex : Postgres → Snowflake)
@@ -143,30 +154,30 @@ ollama pull codestral
 
 ## ❌ À éviter pour data engineering
 
-| Modèle | Pourquoi |
-|---|---|
-| **Devstral** | Optimisé bug-fixing, pas génération data |
+| Modèle                    | Pourquoi                                          |
+| ------------------------- | ------------------------------------------------- |
+| **Devstral**              | Optimisé bug-fixing, pas génération data          |
 | **Llama 3.x généraliste** | Faible sur SQL complexe (échoue sur les fenêtres) |
-| **Gemma 3** | Pas de support dataframe propre |
-| **Mistral 7B classique** | Surclassé par Codestral sur tout |
-| **DeepSeek-R1** | Reasoning trop long pour du SQL itératif |
-| **GPT-OSS 20B** | Bon mais Qwen-Coder spécialisé bat sur SQL |
+| **Gemma 3**               | Pas de support dataframe propre                   |
+| **Mistral 7B classique**  | Surclassé par Codestral sur tout                  |
+| **DeepSeek-R1**           | Reasoning trop long pour du SQL itératif          |
+| **GPT-OSS 20B**           | Bon mais Qwen-Coder spécialisé bat sur SQL        |
 
 ---
 
 ## 🎯 Décision rapide selon la tâche
 
-| Tâche | Modèle |
-|---|---|
-| Text-to-SQL Postgres/MySQL | **Qwen3-Coder 30B-A3B** |
-| Pipeline pandas/polars | **DeepSeek-Coder V2 16B** |
-| Spark / PySpark | **DeepSeek-Coder V2 16B** |
-| dbt models + tests | **Qwen3-Coder 30B-A3B** |
-| Schéma DB / migrations | **GLM-4.7 Thinking** |
-| Script ETL ad-hoc | **Qwen2.5-Coder 14B** |
-| Parsing CSV/JSON/XML | **Qwen2.5-Coder 14B** |
-| Optimisation requête SQL | **Qwen3-Coder 30B-A3B** |
-| Génération seeds / fixtures | **Qwen2.5-Coder 14B** |
+| Tâche                         | Modèle                    |
+| ----------------------------- | ------------------------- |
+| Text-to-SQL Postgres/MySQL    | **Qwen3-Coder 30B-A3B**   |
+| Pipeline pandas/polars        | **DeepSeek-Coder V2 16B** |
+| Spark / PySpark               | **DeepSeek-Coder V2 16B** |
+| dbt models + tests            | **Qwen3-Coder 30B-A3B**   |
+| Schéma DB / migrations        | **GLM-4.7 Thinking**      |
+| Script ETL ad-hoc             | **Qwen2.5-Coder 14B**     |
+| Parsing CSV/JSON/XML          | **Qwen2.5-Coder 14B**     |
+| Optimisation requête SQL      | **Qwen3-Coder 30B-A3B**   |
+| Génération seeds / fixtures   | **Qwen2.5-Coder 14B**     |
 | Notebook Jupyter exploratoire | **DeepSeek-Coder V2 16B** |
 
 ---
@@ -175,13 +186,13 @@ ollama pull codestral
 
 Identifiées par les benchmarks Tinybird et AImultiple sur le text-to-SQL local :
 
-| Type d'erreur | Fréquence | Mitigation |
-|---|---|---|
-| **Joins incorrects** (mauvaise FK) | ~30 % | Toujours fournir le schéma complet avec FK |
-| **Agrégations buggées** (SUM au lieu de COUNT) | ~20 % | Préciser explicitement la métrique attendue |
-| **Filtres manquants** (NULL, dates) | ~15 % | Lister les filtres business attendus |
-| **Erreurs syntaxe dialecte** (PG vs MySQL) | ~10 % | Toujours préciser le dialecte cible |
-| **Hallucination de colonnes** | ~10 % | Schéma exhaustif + temperature ≤ 0.1 |
+| Type d'erreur                                  | Fréquence | Mitigation                                  |
+| ---------------------------------------------- | --------- | ------------------------------------------- |
+| **Joins incorrects** (mauvaise FK)             | ~30 %     | Toujours fournir le schéma complet avec FK  |
+| **Agrégations buggées** (SUM au lieu de COUNT) | ~20 %     | Préciser explicitement la métrique attendue |
+| **Filtres manquants** (NULL, dates)            | ~15 %     | Lister les filtres business attendus        |
+| **Erreurs syntaxe dialecte** (PG vs MySQL)     | ~10 %     | Toujours préciser le dialecte cible         |
+| **Hallucination de colonnes**                  | ~10 %     | Schéma exhaustif + temperature ≤ 0.1        |
 
 **Règle d'or** : valider le SQL généré avec `EXPLAIN` avant de l'exécuter.
 
@@ -248,6 +259,7 @@ opencode --model ollama/glm-4.7:data \
 ## 🔧 Modelfiles prêts à l'emploi
 
 ### SQL strict (zéro halluci colonne)
+
 ```dockerfile
 FROM hf.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF:UD-Q4_K_XL
 PARAMETER num_ctx 32768
@@ -268,6 +280,7 @@ ollama create sql-strict -f Modelfile
 ```
 
 ### dbt assistant
+
 ```dockerfile
 FROM hf.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF:UD-Q4_K_XL
 PARAMETER num_ctx 32768

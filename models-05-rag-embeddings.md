@@ -20,6 +20,7 @@
 ```
 
 **4 modèles** sont impliqués :
+
 1. **Embedder** (vectorise document + query)
 2. **Reranker** (cross-encoder, optionnel mais recommandé)
 3. **LLM génératif** (synthétise la réponse à partir du contexte)
@@ -29,13 +30,13 @@
 
 ## 🏆 Top 5 — Modèles d'embeddings sur 16 GB VRAM
 
-| # | Modèle | Taille | MTEB | Contexte | Multilingue |
-|---|---|---|---|---|---|
-| 1 | **Qwen3-Embedding 8B** | 8B | **70.58** | 32k | ⭐⭐⭐⭐⭐ (100+) |
-| 2 | **BGE-M3** | 568M | 63.0 | 8k | ⭐⭐⭐⭐⭐ (100+) |
-| 3 | **mxbai-embed-large** | 335M | 64.68 | **512** ⚠️ | ⭐⭐ (EN) |
-| 4 | **nomic-embed-text** | 137M | 62.39 | 8k | ⭐⭐ (EN) |
-| 5 | **Snowflake Arctic Embed L** | 335M | 55.98 | 2k | ⭐⭐⭐ |
+| #   | Modèle                       | Taille | MTEB      | Contexte   | Multilingue  |
+| --- | ---------------------------- | ------ | --------- | ---------- | ------------ |
+| 1   | **Qwen3-Embedding 8B**       | 8B     | **70.58** | 32k        | ⭐⭐⭐⭐⭐ (100+) |
+| 2   | **BGE-M3**                   | 568M   | 63.0      | 8k         | ⭐⭐⭐⭐⭐ (100+) |
+| 3   | **mxbai-embed-large**        | 335M   | 64.68     | **512** ⚠️ | ⭐⭐ (EN)      |
+| 4   | **nomic-embed-text**         | 137M   | 62.39     | 8k         | ⭐⭐ (EN)      |
+| 5   | **Snowflake Arctic Embed L** | 335M   | 55.98     | 2k         | ⭐⭐⭐          |
 
 > **Repère** : `text-embedding-3-small` d'OpenAI = 62.3 MTEB, `text-embedding-3-large` = 64.6.
 > Tous les modèles ci-dessus **égalent ou dépassent** OpenAI.
@@ -47,17 +48,20 @@
 **Premier modèle local à dépasser tous les modèles commerciaux** (OpenAI, Cohere, Voyage). 70.58 MTEB.
 
 ### Forces
+
 - **100+ langues** (FR/EN/CJK excellents)
 - Output dimension **flexible** : 32 → 1024 (Matryoshka)
 - Conçu aussi pour le **code** (CodeSearchNet)
 - Tient en 16 GB VRAM en Q4 (~6 GB)
 
 ### Installation
+
 ```bash
 ollama pull qwen3-embedding:8b
 ```
 
 ### Usage Python
+
 ```python
 import ollama
 emb = ollama.embeddings(model="qwen3-embedding:8b", prompt="Mon texte à vectoriser")
@@ -65,6 +69,7 @@ vector = emb["embedding"]  # 1024 dimensions par défaut
 ```
 
 ### Quand l'utiliser
+
 - Production sérieuse, qualité avant tout
 - Corpus multilingue (FR + EN + autres)
 - RAG sur du code ET du texte mixte
@@ -75,11 +80,13 @@ vector = emb["embedding"]  # 1024 dimensions par défaut
 ## 2. BGE-M3 — 🥈 hybrid search en un seul modèle
 
 568M params, **génère 3 types de représentations en une seule passe** :
+
 - Dense (vecteur classique)
 - Sparse (BM25-like, mots-clés)
 - Multi-vector (ColBERT-like)
 
 ### Forces
+
 - **Hybrid search natif** sans avoir à maintenir un index BM25 séparé
 - 100+ langues
 - 8k contexte
@@ -87,11 +94,13 @@ vector = emb["embedding"]  # 1024 dimensions par défaut
 - Excellent compromis qualité/vitesse
 
 ### Installation
+
 ```bash
 ollama pull bge-m3
 ```
 
 ### Quand l'utiliser
+
 - Recherche sur documents longs avec mix concept + mots-clés exacts
 - Architecture simplifiée (un seul modèle pour dense + sparse)
 - Multilingue avec qualité homogène
@@ -103,11 +112,13 @@ ollama pull bge-m3
 Excellent pour l'anglais pur, mais **contexte de 512 tokens seulement** → exige un chunking agressif.
 
 ### Installation
+
 ```bash
 ollama pull mxbai-embed-large
 ```
 
 ### À utiliser uniquement si
+
 - Corpus 100 % anglais
 - Documents courts (< 512 tokens) ou chunks fins
 - Budget VRAM serré (~700 MB)
@@ -121,24 +132,29 @@ ollama pull mxbai-embed-large
 **Seul modèle complètement open** : poids + code d'entraînement + dataset publics.
 
 ### Forces
+
 - Reproductibilité totale (compliance, audit)
 - 137M params, ultra-léger (~300 MB)
 - 8k contexte
 - Tourne sur CPU à latence acceptable
 
 ### Installation
+
 ```bash
 ollama pull nomic-embed-text
 ```
 
 ### Quand l'utiliser
+
 - Industries régulées (santé, finance, défense)
 - Besoin de documenter chaque modèle de la stack
 - Déploiement edge / CPU only
 - ⚠️ Pas top en multilingue (~ 0 sur cross-lingual)
 
 ### Variante code
+
 Nomic propose aussi **`nomic-embed-code` (7B)** qui bat Voyage Code 3 sur CodeSearchNet :
+
 ```bash
 ollama pull nomic-embed-code
 ```
@@ -159,30 +175,31 @@ ollama pull snowflake-arctic-embed:large
 
 ## 🎯 Décision rapide — embedder
 
-| Scénario | Modèle |
-|---|---|
-| Production RAG multilingue (FR+EN) | **Qwen3-Embedding 8B** |
-| Hybrid search (dense + sparse) | **BGE-M3** |
-| Anglais seulement, vitesse max | **mxbai-embed-large** |
-| Compliance / audit complet | **nomic-embed-text** |
-| RAG sur code source | **nomic-embed-code** ou **Qwen3-Embedding** |
-| Edge / CPU only | **all-MiniLM-L6-v2** ou **nomic-embed-text** |
-| Documents très longs (8k+) | **BGE-M3** ou **Qwen3-Embedding** |
+| Scénario                           | Modèle                                       |
+| ---------------------------------- | -------------------------------------------- |
+| Production RAG multilingue (FR+EN) | **Qwen3-Embedding 8B**                       |
+| Hybrid search (dense + sparse)     | **BGE-M3**                                   |
+| Anglais seulement, vitesse max     | **mxbai-embed-large**                        |
+| Compliance / audit complet         | **nomic-embed-text**                         |
+| RAG sur code source                | **nomic-embed-code** ou **Qwen3-Embedding**  |
+| Edge / CPU only                    | **all-MiniLM-L6-v2** ou **nomic-embed-text** |
+| Documents très longs (8k+)         | **BGE-M3** ou **Qwen3-Embedding**            |
 
 ---
 
 ## 🔄 Top 3 — Modèles de reranking (cross-encoders)
 
 Les rerankers ajoutent **+15 à +40 % de précision** sur le retrieval. Pipeline standard :
+
 ```
 Embeddings (top 50) → Reranker (top 5) → LLM
 ```
 
-| # | Modèle | Taille | Latence GPU | Multilingue |
-|---|---|---|---|---|
-| 1 | **BGE-reranker-v2-m3** | 568M | 50-100 ms | ⭐⭐⭐⭐⭐ (100+) |
-| 2 | **Jina Reranker v3** | ~600M | < 200 ms | ⭐⭐⭐⭐⭐ (100+) |
-| 3 | **GTE-reranker-modernbert-base** | 149M | 80 ms | ⭐⭐⭐ (EN+) |
+| #   | Modèle                           | Taille | Latence GPU | Multilingue  |
+| --- | -------------------------------- | ------ | ----------- | ------------ |
+| 1   | **BGE-reranker-v2-m3**           | 568M   | 50-100 ms   | ⭐⭐⭐⭐⭐ (100+) |
+| 2   | **Jina Reranker v3**             | ~600M  | < 200 ms    | ⭐⭐⭐⭐⭐ (100+) |
+| 3   | **GTE-reranker-modernbert-base** | 149M   | 80 ms       | ⭐⭐⭐ (EN+)    |
 
 ### 1. BGE-reranker-v2-m3 — 🥇 le standard
 
@@ -208,6 +225,7 @@ score = reranker.compute_score(['ma question', 'document candidat'])
 149M params seulement, latence excellente, qualité top sur l'anglais.
 
 ### Quand sauter le reranker ?
+
 - Corpus < 1000 documents (BM25 + dense suffit)
 - Latence critique (< 100 ms total)
 - Embeddings déjà très spécialisés
@@ -216,27 +234,28 @@ score = reranker.compute_score(['ma question', 'document candidat'])
 
 ## 🗄️ Vector stores locaux
 
-| Outil | Forces | Faiblesses |
-|---|---|---|
-| **Qdrant** ⭐ | Performant, Rust, hybrid search natif, REST/gRPC | Complexité config |
-| **Chroma** | Ultra-simple, parfait pour prototypage | Moins scalable |
-| **pgvector** | Intégré PostgreSQL, ACID, joins SQL | Moins rapide pure-vector |
-| **Weaviate** | Hybrid + GraphQL + multi-modal | Lourd |
-| **LanceDB** | Embedded, sans serveur, ultra-rapide | Jeune écosystème |
-| **FAISS** | Le plus rapide, mais bibliothèque pure | Pas de persistence native |
+| Outil        | Forces                                           | Faiblesses                |
+| ------------ | ------------------------------------------------ | ------------------------- |
+| **Qdrant** ⭐ | Performant, Rust, hybrid search natif, REST/gRPC | Complexité config         |
+| **Chroma**   | Ultra-simple, parfait pour prototypage           | Moins scalable            |
+| **pgvector** | Intégré PostgreSQL, ACID, joins SQL              | Moins rapide pure-vector  |
+| **Weaviate** | Hybrid + GraphQL + multi-modal                   | Lourd                     |
+| **LanceDB**  | Embedded, sans serveur, ultra-rapide             | Jeune écosystème          |
+| **FAISS**    | Le plus rapide, mais bibliothèque pure           | Pas de persistence native |
 
 ### Recommandations 2026
 
-| Cas d'usage | Vector store |
-|---|---|
-| Production sérieuse, multi-tenant | **Qdrant** |
-| Application Postgres existante | **pgvector** |
-| Prototypage rapide | **Chroma** ou **LanceDB** |
-| Recherche multimodale (texte + image) | **Weaviate** |
-| Embedded dans une app (sans serveur) | **LanceDB** |
-| Performance pure (1M+ vecteurs) | **Qdrant** ou **FAISS** |
+| Cas d'usage                           | Vector store              |
+| ------------------------------------- | ------------------------- |
+| Production sérieuse, multi-tenant     | **Qdrant**                |
+| Application Postgres existante        | **pgvector**              |
+| Prototypage rapide                    | **Chroma** ou **LanceDB** |
+| Recherche multimodale (texte + image) | **Weaviate**              |
+| Embedded dans une app (sans serveur)  | **LanceDB**               |
+| Performance pure (1M+ vecteurs)       | **Qdrant** ou **FAISS**   |
 
 ### Lancer Qdrant en local
+
 ```bash
 docker run -p 6333:6333 -p 6334:6334 \
   -v $(pwd)/qdrant_storage:/qdrant/storage:z \
@@ -244,6 +263,7 @@ docker run -p 6333:6333 -p 6334:6334 \
 ```
 
 ### Lancer pgvector
+
 ```sql
 -- Sur PostgreSQL 16+
 CREATE EXTENSION vector;
@@ -263,24 +283,27 @@ Le chunking conditionne **plus** la qualité du RAG que le choix du modèle d'em
 
 ### Tailles recommandées par usage
 
-| Type de doc | Chunk size | Overlap |
-|---|---|---|
-| Articles techniques | 512-1024 tokens | 100-200 |
-| Code source | par fonction/classe | 0 (avec contexte parent) |
-| Conversation / chat logs | par message | 0 |
-| Documentation API | par endpoint/section | 50 |
-| Livres / longs documents | 1024-2048 tokens | 200-400 |
-| Réglementaire / juridique | par article/clause | 0 |
+| Type de doc               | Chunk size           | Overlap                  |
+| ------------------------- | -------------------- | ------------------------ |
+| Articles techniques       | 512-1024 tokens      | 100-200                  |
+| Code source               | par fonction/classe  | 0 (avec contexte parent) |
+| Conversation / chat logs  | par message          | 0                        |
+| Documentation API         | par endpoint/section | 50                       |
+| Livres / longs documents  | 1024-2048 tokens     | 200-400                  |
+| Réglementaire / juridique | par article/clause   | 0                        |
 
 ### Stratégies par sophistication croissante
 
 #### 1. Fixed-size (baseline)
+
 ```python
 chunks = [text[i:i+1024] for i in range(0, len(text), 800)]  # overlap 224
 ```
+
 Simple mais coupe au milieu des phrases.
 
 #### 2. Sentence-aware
+
 ```python
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 splitter = RecursiveCharacterTextSplitter(
@@ -291,19 +314,23 @@ splitter = RecursiveCharacterTextSplitter(
 ```
 
 #### 3. Semantic chunking (recommandé 2026)
+
 Découpe aux **vrais changements de sujet** (basé sur la similarité d'embedding entre phrases) :
+
 ```python
 from langchain_experimental.text_splitter import SemanticChunker
 chunker = SemanticChunker(embeddings, breakpoint_threshold_type="percentile")
 ```
 
 #### 4. Document-aware
+
 - Markdown → couper aux `#`, `##`
 - Code → couper par AST (par fonction/classe avec `tree-sitter`)
 - HTML → couper par balises sémantiques
 - PDF → préserver la structure (tables, figures)
 
 #### 5. Contextual chunking (Anthropic, 2024)
+
 Préfixer chaque chunk par un résumé du document parent (généré par LLM). **Améliore le retrieval de 35-50 %**.
 
 ```python
@@ -320,6 +347,7 @@ for chunk in chunks:
 Combiner **embeddings (sémantique)** + **BM25 (mots-clés exacts)** améliore le retrieval de **20-40 %** sur les requêtes contenant des termes rares (noms propres, codes, jargon).
 
 ### Avec BGE-M3 (en une passe)
+
 ```python
 from FlagEmbedding import BGEM3FlagModel
 model = BGEM3FlagModel('BAAI/bge-m3', use_fp16=True)
@@ -327,6 +355,7 @@ out = model.encode(texts, return_dense=True, return_sparse=True, return_colbert_
 ```
 
 ### Avec Qdrant (vecteurs séparés)
+
 ```python
 client.create_collection(
     collection_name="docs",
@@ -340,6 +369,7 @@ client.create_collection(
 ```
 
 ### Fusion des scores : Reciprocal Rank Fusion (RRF)
+
 ```python
 def rrf(rankings: list[list[int]], k=60) -> list[int]:
     scores = {}
@@ -355,13 +385,13 @@ def rrf(rankings: list[list[int]], k=60) -> list[int]:
 
 Une fois le contexte récupéré (top 5-10 chunks), un LLM génère la réponse. Pour ça :
 
-| Cas d'usage RAG | Modèle (voir docs dédiés) |
-|---|---|
-| RAG général (Q&A) | **Qwen3 30B-A3B Instruct** ([analyse-resume](models-03-analyse-resume.md)) |
-| RAG sur code | **Qwen3-Coder 30B-A3B** ([code-agentique](models-01-code-agentique.md)) |
-| RAG multilingue (FR) | **Mistral Small 3.1** ([traduction](models-02-traduction.md)) |
-| RAG sur SQL/data | **Qwen3-Coder** ou **DeepSeek-Coder V2** ([data-engineering](models-04-data-engineering.md)) |
-| RAG analytique critique | **DeepSeek-R1** ([analyse-resume](models-03-analyse-resume.md)) |
+| Cas d'usage RAG         | Modèle (voir docs dédiés)                                                                    |
+| ----------------------- | -------------------------------------------------------------------------------------------- |
+| RAG général (Q&A)       | **Qwen3 30B-A3B Instruct** ([analyse-resume](models-03-analyse-resume.md))                   |
+| RAG sur code            | **Qwen3-Coder 30B-A3B** ([code-agentique](models-01-code-agentique.md))                      |
+| RAG multilingue (FR)    | **Mistral Small 3.1** ([traduction](models-02-traduction.md))                                |
+| RAG sur SQL/data        | **Qwen3-Coder** ou **DeepSeek-Coder V2** ([data-engineering](models-04-data-engineering.md)) |
+| RAG analytique critique | **DeepSeek-R1** ([analyse-resume](models-03-analyse-resume.md))                              |
 
 ---
 
@@ -369,14 +399,14 @@ Une fois le contexte récupéré (top 5-10 chunks), un LLM génère la réponse.
 
 ### Métriques essentielles
 
-| Métrique | Mesure | Outil |
-|---|---|---|
-| **Hit@k** | Le bon doc est-il dans le top k ? | RAGAS, Trulens |
-| **MRR** | À quel rang apparaît le bon doc ? | RAGAS |
-| **Faithfulness** | La réponse cite-t-elle vraiment le contexte ? | RAGAS, DeepEval |
-| **Answer relevancy** | La réponse répond-elle à la question ? | RAGAS |
-| **Context precision** | Les chunks récupérés sont-ils pertinents ? | RAGAS |
-| **Latency P95** | 95e centile du temps total | Prometheus |
+| Métrique              | Mesure                                        | Outil           |
+| --------------------- | --------------------------------------------- | --------------- |
+| **Hit@k**             | Le bon doc est-il dans le top k ?             | RAGAS, Trulens  |
+| **MRR**               | À quel rang apparaît le bon doc ?             | RAGAS           |
+| **Faithfulness**      | La réponse cite-t-elle vraiment le contexte ? | RAGAS, DeepEval |
+| **Answer relevancy**  | La réponse répond-elle à la question ?        | RAGAS           |
+| **Context precision** | Les chunks récupérés sont-ils pertinents ?    | RAGAS           |
+| **Latency P95**       | 95e centile du temps total                    | Prometheus      |
 
 ### Frameworks d'évaluation
 
@@ -385,6 +415,7 @@ pip install ragas deepeval trulens-eval
 ```
 
 **RAGAS** est le standard 2026 pour évaluer un pipeline RAG :
+
 ```python
 from ragas import evaluate
 from ragas.metrics import faithfulness, answer_relevancy, context_precision
@@ -399,15 +430,16 @@ result = evaluate(
 
 ## 🛠️ Frameworks RAG complets
 
-| Framework | Forces | Quand l'utiliser |
-|---|---|---|
-| **LlamaIndex** | Le plus complet pour RAG, abstractions claires | Projets RAG sérieux |
-| **LangChain** | Énorme écosystème, intégrations | Multi-agents + RAG |
-| **Haystack** | Production-ready, pipelines déclaratifs | Recherche entreprise |
-| **txtai** | Tout-en-un (embeddings + vector + LLM) | Simplicité |
-| **Verba** (Weaviate) | UI prête à l'emploi | Démos / POC |
+| Framework            | Forces                                         | Quand l'utiliser     |
+| -------------------- | ---------------------------------------------- | -------------------- |
+| **LlamaIndex**       | Le plus complet pour RAG, abstractions claires | Projets RAG sérieux  |
+| **LangChain**        | Énorme écosystème, intégrations                | Multi-agents + RAG   |
+| **Haystack**         | Production-ready, pipelines déclaratifs        | Recherche entreprise |
+| **txtai**            | Tout-en-un (embeddings + vector + LLM)         | Simplicité           |
+| **Verba** (Weaviate) | UI prête à l'emploi                            | Démos / POC          |
 
 ### Stack minimale 2026 recommandée
+
 ```
 Langchain/LlamaIndex (orchestration)
   ├─ Qdrant (vector store)
@@ -486,25 +518,32 @@ print(rag("Quelle est la politique de remboursement ?"))
 ## ⚠️ Pièges fréquents
 
 ### 1. Embedder différent pour query et docs
+
 **TOUJOURS** utiliser le même modèle d'embedding pour vectoriser les documents et les requêtes. Sinon les distances cosinus sont incohérentes.
 
 ### 2. Chunks trop petits
+
 Chunks < 200 tokens → contexte insuffisant pour le LLM.
 Chunks > 2048 tokens → bruit excessif, "lost in the middle".
 
 ### 3. Pas de reranker
+
 Sauter le reranker = perdre 20-40 % de précision sur les requêtes complexes. Pour 50-100 ms de latence en plus, c'est presque toujours rentable.
 
 ### 4. Top-k trop petit avant reranking
+
 Récupérer top 5 directement = manquer souvent le bon doc. Récupérer top 20-50 → reranker → top 5.
 
 ### 5. Pas d'évaluation
+
 Sans set d'évaluation (50-100 questions avec réponses attendues), impossible de savoir si une modif améliore le pipeline. Toujours commencer par construire ce set.
 
 ### 6. Re-indexer à chaque modification
+
 Garder un **versioning de l'index** : chaque changement d'embedder ou de chunking nécessite une réindexation complète. Prévoir des indexes par version (`docs_v1`, `docs_v2`).
 
 ### 7. Hallucinations malgré le RAG
+
 Le LLM peut **ignorer le contexte** si le prompt n'est pas strict. Toujours préciser : *« Réponds UNIQUEMENT à partir du contexte. Si l'info n'y est pas, dis "Information non disponible". »*
 
 ---

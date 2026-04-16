@@ -7,13 +7,13 @@
 
 ## 🏆 Top 5 — Traduction de documents sur 16 GB VRAM
 
-| # | Modèle | Taille | Force principale | FR ↔ EN |
-|---|---|---|---|---|
-| 1 | **Mistral Small 3.1** | 24B | EU langues, terminologie cohérente | ⭐⭐⭐⭐⭐ |
-| 2 | **Qwen 3 14B** | 14B | Multilingue le plus large | ⭐⭐⭐⭐ |
-| 3 | **Llama 3.3 70B** (offload) | 70B | Qualité littéraire, gros docs | ⭐⭐⭐⭐⭐ |
-| 4 | **Mistral 7B** | 7B | Rapide, FR natif | ⭐⭐⭐⭐ |
-| 5 | **Stable LM 2 12B** | 12B | Léger FR/EN/DE/IT/ES/PT/NL | ⭐⭐⭐ |
+| #   | Modèle                      | Taille | Force principale                   | FR ↔ EN |
+| --- | --------------------------- | ------ | ---------------------------------- | ------- |
+| 1   | **Mistral Small 3.1**       | 24B    | EU langues, terminologie cohérente | ⭐⭐⭐⭐⭐   |
+| 2   | **Qwen 3 14B**              | 14B    | Multilingue le plus large          | ⭐⭐⭐⭐    |
+| 3   | **Llama 3.3 70B** (offload) | 70B    | Qualité littéraire, gros docs      | ⭐⭐⭐⭐⭐   |
+| 4   | **Mistral 7B**              | 7B     | Rapide, FR natif                   | ⭐⭐⭐⭐    |
+| 5   | **Stable LM 2 12B**         | 12B    | Léger FR/EN/DE/IT/ES/PT/NL         | ⭐⭐⭐     |
 
 ---
 
@@ -22,12 +22,14 @@
 24B dense, **conçu en France** avec un focus explicite sur les langues européennes. Mistral est entraîné majoritairement sur du corpus FR/DE/ES/IT propre.
 
 ### Forces
+
 - **Terminologie cohérente** sur des documents longs (essentiel en juridique/technique)
 - Préserve la mise en forme (Markdown, HTML, listes, citations)
 - Style naturel en FR (pas l'anglicisme typique des modèles US)
 - Tient en 16 GB Q4 avec 32k de contexte
 
 ### Installation
+
 ```bash
 ollama pull mistral-small3.1
 
@@ -38,6 +40,7 @@ ollama run mistral-small3.1
 ```
 
 ### Prompt type
+
 ```
 Tu es traducteur FR↔EN professionnel. Traduis le texte ci-dessous
 en préservant : la mise en forme Markdown, les noms propres, le ton,
@@ -59,11 +62,13 @@ Texte source :
 Le modèle **le plus polyvalent** pour les langues non européennes (CJK, arabe, hindi, etc.). Si tu traduis vers/depuis du chinois, japonais, coréen → c'est lui.
 
 ### Forces
+
 - Support 100+ langues, le meilleur de sa catégorie
 - Excellent même en sortant de FR↔EN (FR↔JA, EN↔ZH...)
 - 128k de contexte théorique (16-32k fiable)
 
 ### Installation
+
 ```bash
 ollama pull qwen3:14b
 ollama run qwen3:14b
@@ -72,6 +77,7 @@ ollama run qwen3:14b
 ```
 
 ### Quand le préférer à Mistral
+
 - Documents multilingues (3+ langues)
 - Paires asiatiques
 - Si tu as besoin du **mode `/think`** pour traductions techniques pointues (ralentit mais améliore la précision)
@@ -83,11 +89,13 @@ ollama run qwen3:14b
 70B dense → **ne tient PAS en VRAM**, mais avec tes **128 GB RAM** tu peux faire de l'offload CPU complet à ~3-8 tokens/s. Acceptable pour de la traduction batch overnight.
 
 ### Forces
+
 - Qualité de style supérieure pour la fiction, le journalisme, les essais
 - Préserve mieux les nuances stylistiques (registre, tonalité)
 - Excellent en suivi de glossaire long
 
 ### Installation
+
 ```bash
 ollama pull llama3.3:70b
 
@@ -96,6 +104,7 @@ OLLAMA_NUM_GPU=20 ollama run llama3.3:70b
 ```
 
 ### Cas d'usage
+
 - **Batch nocturne** : 50 documents à traduire pendant la nuit
 - Livres, articles longs, contenus marketing
 - Pas pour de l'interactif
@@ -107,11 +116,13 @@ OLLAMA_NUM_GPU=20 ollama run llama3.3:70b
 Le modèle "workhorse" pour de la traduction haute vitesse en FR/EN, allemand, espagnol, italien.
 
 ### Forces
+
 - 30+ tokens/s sur 16 GB VRAM
 - Excellent rapport qualité/vitesse pour des paires européennes courantes
 - Apache 2.0
 
 ### Installation
+
 ```bash
 ollama pull mistral:7b
 ollama run mistral:7b
@@ -138,28 +149,28 @@ ollama pull stablelm2:12b
 
 ## ❌ À éviter pour la traduction
 
-| Modèle | Pourquoi |
-|---|---|
-| **DeepSeek-R1** | Reasoning excessif, ajoute des explications non demandées |
-| **Magistral** | Idem, latence prohibitive |
-| **Devstral / Qwen Coder** | Modèles code, faibles en littéraire |
-| **Gemma 3** | Multilingue limité, dérive vers l'anglais |
-| **GPT-OSS 20B** | Bon mais sur-entraîné EN, biais culturel US fort |
-| **Phi-4** | Petit contexte (16k) → casse les longs docs |
+| Modèle                    | Pourquoi                                                  |
+| ------------------------- | --------------------------------------------------------- |
+| **DeepSeek-R1**           | Reasoning excessif, ajoute des explications non demandées |
+| **Magistral**             | Idem, latence prohibitive                                 |
+| **Devstral / Qwen Coder** | Modèles code, faibles en littéraire                       |
+| **Gemma 3**               | Multilingue limité, dérive vers l'anglais                 |
+| **GPT-OSS 20B**           | Bon mais sur-entraîné EN, biais culturel US fort          |
+| **Phi-4**                 | Petit contexte (16k) → casse les longs docs               |
 
 ---
 
 ## 🎯 Décision rapide
 
-| Scénario | Modèle |
-|---|---|
-| Document technique FR↔EN (terminologie) | **Mistral Small 3.1** |
-| Document multilingue avec CJK/Arabe | **Qwen 3 14B** |
-| Roman / texte littéraire (qualité max) | **Llama 3.3 70B** (offload) |
-| Pré-traduction massive en batch | **Mistral 7B** |
-| Document EU multi-langues (DE/IT/ES + FR) | **Stable LM 2 12B** |
-| Sous-titres / phrases courtes | **Mistral 7B** |
-| Documentation logicielle (préserver code) | **Mistral Small 3.1** |
+| Scénario                                  | Modèle                      |
+| ----------------------------------------- | --------------------------- |
+| Document technique FR↔EN (terminologie)   | **Mistral Small 3.1**       |
+| Document multilingue avec CJK/Arabe       | **Qwen 3 14B**              |
+| Roman / texte littéraire (qualité max)    | **Llama 3.3 70B** (offload) |
+| Pré-traduction massive en batch           | **Mistral 7B**              |
+| Document EU multi-langues (DE/IT/ES + FR) | **Stable LM 2 12B**         |
+| Sous-titres / phrases courtes             | **Mistral 7B**              |
+| Documentation logicielle (préserver code) | **Mistral Small 3.1**       |
 
 ---
 
@@ -215,18 +226,23 @@ ollama create mistral-trad-projet -f Modelfile
 ## ⚠️ Pièges spécifiques à la traduction
 
 ### 1. Hallucinations de noms propres
+
 Les LLM peuvent traduire involontairement des noms propres ("New York" → "Nouvelle-York"). **Toujours préciser** dans le prompt : *« ne traduis pas les noms propres »*.
 
 ### 2. Code et URLs
+
 Sans instruction explicite, le modèle peut "traduire" des variables ou URLs. Préciser : *« préserve le code, les URLs, les noms de fichiers tels quels »*.
 
 ### 3. Genre grammatical
+
 EN → FR : "the developer" peut donner "le développeur" / "la développeuse". Pour la cohérence, fixer dans le prompt : *« utilise le masculin générique pour les rôles génériques »* (ou féminin/inclusif selon préférence).
 
 ### 4. Citations
+
 Les guillemets EN (`""`) deviennent FR (`«»`) automatiquement avec Mistral. Si tu veux préserver, le préciser.
 
 ### 5. Température
+
 Pour la traduction, **toujours basse** (0.1 - 0.3). Au-dessus, le modèle "réécrit" au lieu de traduire.
 
 ---
