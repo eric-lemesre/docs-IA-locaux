@@ -58,6 +58,12 @@ Hybrid search, évaluation RAGAS, pipeline Python bout-en-bout.
 Workflow complet : dataset → entraînement → export GGUF → import Ollama.
 Hyperparamètres, overfitting, cas d'usage, coûts réalistes.
 
+### [`models-07-vision-multimodal.md`](./models-07-vision-multimodal.md)
+
+Classement pour la **vision et le multi-modal** (VLM, OCR, analyse de documents/images).
+Top VLM : **Qwen3-VL 8B**, **Qwen2.5-VL 7B**, **Gemma 3 27B QAT**.
+Top OCR : **olmOCR-2-7B**, **OCRFlux-3B**. Pipelines PDF→Markdown, multi-image.
+
 ---
 
 ## 🗺️ Parcours conseillés
@@ -85,6 +91,12 @@ Hyperparamètres, overfitting, cas d'usage, coûts réalistes.
 1. [`models-06-fine-tuning.md`](./models-06-fine-tuning.md) — workflow complet
 2. [`models-05-rag-embeddings.md`](./models-05-rag-embeddings.md) — combiner avec du RAG
 
+### Je veux analyser des images ou des documents scannés
+
+1. [`models-07-vision-multimodal.md`](./models-07-vision-multimodal.md) — choix VLM/OCR selon le cas
+2. [`opencode-02-configuration-ollama.md`](./opencode-02-configuration-ollama.md) — configurer dans OpenCode
+3. (optionnel) [`models-05-rag-embeddings.md`](./models-05-rag-embeddings.md) — indexer les documents extraits
+
 ---
 
 ## 📦 Stack recommandée complète
@@ -101,15 +113,15 @@ Hyperparamètres, overfitting, cas d'usage, coûts réalistes.
         │   (runtime local)        │
         └─────────────┬────────────┘
                       │
-    ┌─────────────────┼─────────────────┐
-    │                 │                 │
-    ▼                 ▼                 ▼
-┌─────────┐      ┌──────────┐     ┌──────────┐
-│  Code   │      │  Analyse │     │   RAG    │
-│Qwen3-   │      │Qwen3 30B │     │Qdrant +  │
-│Coder 30B│      │A3B Inst. │     │BGE-M3 +  │
-│A3B      │      │          │     │bge-rerk  │
-└─────────┘      └──────────┘     └──────────┘
+    ┌─────────────────┼──────────┬──────────┐
+    │                 │          │          │
+    ▼                 ▼          ▼          ▼
+┌─────────┐      ┌──────────┐ ┌───────┐ ┌──────────┐
+│  Code   │      │  Analyse │ │  RAG  │ │  Vision  │
+│Qwen3-   │      │Qwen3 30B │ │Qdrant+│ │Qwen2.5-VL│
+│Coder 30B│      │A3B Inst. │ │BGE-M3 │ │  / Gemma │
+│A3B      │      │          │ │bge-rk │ │  3 27B   │
+└─────────┘      └──────────┘ └───────┘ └──────────┘
 
 ┌─────────────────────────────────────────────────────┐
 │   Fine-tuning (Unsloth + QLoRA, hors ligne)         │
@@ -139,6 +151,10 @@ ollama pull qwen3-embedding:8b
 
 # Petit modèle rapide polyvalent
 ollama pull qwen2.5-coder:7b
+
+# Vision / multi-modal
+ollama pull qwen2.5vl:7b
+# (pour l'OCR pur : olmOCR-2 ou OCRFlux-3B, voir models-07)
 ```
 
 Puis créer les variantes avec `num_ctx` étendu pour chacun (voir [`opencode-02`](./opencode-02-configuration-ollama.md) §6).
@@ -157,6 +173,7 @@ Puis créer les variantes avec `num_ctx` étendu pour chacun (voir [`opencode-02
 | 06  | models-04-data-engineering       | 337    | Top modèles SQL/ETL/pandas        |
 | 07  | models-05-rag-embeddings         | 539    | Pipeline RAG complet              |
 | 08  | models-06-fine-tuning            | ~540   | Fine-tuning local QLoRA           |
+| 09  | models-07-vision-multimodal      | ~300   | VLM, OCR, analyse d'images        |
 
 ---
 
